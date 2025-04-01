@@ -7,6 +7,16 @@
       "cmakeDebugType": "external",
       "pipeName": "\\\\.\\pipe\\vcpkg_ext_portfile_dbg",
       "preLaunchTask": "Debug vcpkg commands"
+    },
+    {
+      "name": "Launch Server",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/CourseWorkOOP.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": []
     }
   ]
 }
