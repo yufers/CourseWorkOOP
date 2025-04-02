@@ -1,6 +1,11 @@
 {
   "dependencies": [
-    "fmt",
-    "crow"
+    {
+      "name": "drogon",
+      "features": [
+        "ctl"
+      ]
+    },
+    "fmt"
   ]
 }
