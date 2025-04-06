@@ -3,9 +3,13 @@
     {
       "name": "drogon",
       "features": [
-        "ctl"
+        "ctl",
+        "mysql",
+        "postgres",
+        "orm"
       ]
     },
-    "fmt"
+    "fmt",
+    "libpq"
   ]
 }
