@@ -128,7 +128,7 @@ class Readers
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    bool dirtyFlag_[0]={ false };
+    //bool dirtyFlag_[0]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {

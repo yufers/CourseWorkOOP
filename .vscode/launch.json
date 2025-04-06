@@ -15,7 +15,7 @@
       "program": "${workspaceFolder}/build/CourseWorkOOP.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${fileDirname}",
+      "cwd": "${workspaceFolder}",
       "environment": []
     }
   ]
