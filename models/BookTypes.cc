@@ -13,11 +13,15 @@ using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::library;
 
+const std::string BookTypes::Cols::_type_id = "\"type_id\"";
+const std::string BookTypes::Cols::_type_name = "\"type_name\"";
 const std::string BookTypes::primaryKeyName = "type_id";
 const bool BookTypes::hasPrimaryKey = true;
 const std::string BookTypes::tableName = "\"book_types\"";
 
 const std::vector<typename BookTypes::MetaData> BookTypes::metaData_={
+{"type_id","int32_t","integer",4,1,1,1},
+{"type_name","std::string","character varying",100,0,0,1}
 };
 const std::string &BookTypes::getColumnName(size_t index) noexcept(false)
 {
@@ -28,45 +32,169 @@ BookTypes::BookTypes(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+        if(!r["type_id"].isNull())
+        {
+            typeId_=std::make_shared<int32_t>(r["type_id"].as<int32_t>());
+        }
+        if(!r["type_name"].isNull())
+        {
+            typeName_=std::make_shared<std::string>(r["type_name"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 0 > r.size())
+        if(offset + 2 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
         }
         size_t index;
+        index = offset + 0;
+        if(!r[index].isNull())
+        {
+            typeId_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 1;
+        if(!r[index].isNull())
+        {
+            typeName_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 BookTypes::BookTypes(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 2)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        dirtyFlag_[0] = true;
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            typeId_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            typeName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+        }
     }
 }
 
 BookTypes::BookTypes(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("type_id"))
+    {
+        dirtyFlag_[0]=true;
+        if(!pJson["type_id"].isNull())
+        {
+            typeId_=std::make_shared<int32_t>((int32_t)pJson["type_id"].asInt64());
+        }
+    }
+    if(pJson.isMember("type_name"))
+    {
+        dirtyFlag_[1]=true;
+        if(!pJson["type_name"].isNull())
+        {
+            typeName_=std::make_shared<std::string>(pJson["type_name"].asString());
+        }
+    }
 }
 
 void BookTypes::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 2)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            typeId_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            typeName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+        }
     }
 }
 
 void BookTypes::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("type_id"))
+    {
+        if(!pJson["type_id"].isNull())
+        {
+            typeId_=std::make_shared<int32_t>((int32_t)pJson["type_id"].asInt64());
+        }
+    }
+    if(pJson.isMember("type_name"))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson["type_name"].isNull())
+        {
+            typeName_=std::make_shared<std::string>(pJson["type_name"].asString());
+        }
+    }
+}
+
+const int32_t &BookTypes::getValueOfTypeId() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(typeId_)
+        return *typeId_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &BookTypes::getTypeId() const noexcept
+{
+    return typeId_;
+}
+void BookTypes::setTypeId(const int32_t &pTypeId) noexcept
+{
+    typeId_ = std::make_shared<int32_t>(pTypeId);
+    dirtyFlag_[0] = true;
+}
+const typename BookTypes::PrimaryKeyType & BookTypes::getPrimaryKey() const
+{
+    assert(typeId_);
+    return *typeId_;
+}
+
+const std::string &BookTypes::getValueOfTypeName() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(typeName_)
+        return *typeName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &BookTypes::getTypeName() const noexcept
+{
+    return typeName_;
+}
+void BookTypes::setTypeName(const std::string &pTypeName) noexcept
+{
+    typeName_ = std::make_shared<std::string>(pTypeName);
+    dirtyFlag_[1] = true;
+}
+void BookTypes::setTypeName(std::string &&pTypeName) noexcept
+{
+    typeName_ = std::make_shared<std::string>(std::move(pTypeName));
+    dirtyFlag_[1] = true;
 }
 
 void BookTypes::updateId(const uint64_t id)
@@ -76,26 +204,69 @@ void BookTypes::updateId(const uint64_t id)
 const std::vector<std::string> &BookTypes::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
+        "type_name"
     };
     return inCols;
 }
 
 void BookTypes::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getTypeName())
+        {
+            binder << getValueOfTypeName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> BookTypes::updateColumns() const
 {
     std::vector<std::string> ret;
+    if(dirtyFlag_[1])
+    {
+        ret.push_back(getColumnName(1));
+    }
     return ret;
 }
 
 void BookTypes::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getTypeName())
+        {
+            binder << getValueOfTypeName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value BookTypes::toJson() const
 {
     Json::Value ret;
+    if(getTypeId())
+    {
+        ret["type_id"]=getValueOfTypeId();
+    }
+    else
+    {
+        ret["type_id"]=Json::Value();
+    }
+    if(getTypeName())
+    {
+        ret["type_name"]=getValueOfTypeName();
+    }
+    else
+    {
+        ret["type_name"]=Json::Value();
+    }
     return ret;
 }
 
@@ -103,28 +274,102 @@ Json::Value BookTypes::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 0)
+    if(pMasqueradingVector.size() == 2)
     {
+        if(!pMasqueradingVector[0].empty())
+        {
+            if(getTypeId())
+            {
+                ret[pMasqueradingVector[0]]=getValueOfTypeId();
+            }
+            else
+            {
+                ret[pMasqueradingVector[0]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[1].empty())
+        {
+            if(getTypeName())
+            {
+                ret[pMasqueradingVector[1]]=getValueOfTypeName();
+            }
+            else
+            {
+                ret[pMasqueradingVector[1]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+    if(getTypeId())
+    {
+        ret["type_id"]=getValueOfTypeId();
+    }
+    else
+    {
+        ret["type_id"]=Json::Value();
+    }
+    if(getTypeName())
+    {
+        ret["type_name"]=getValueOfTypeName();
+    }
+    else
+    {
+        ret["type_name"]=Json::Value();
+    }
     return ret;
 }
 
 bool BookTypes::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("type_id"))
+    {
+        if(!validJsonOfField(0, "type_id", pJson["type_id"], err, true))
+            return false;
+    }
+    if(pJson.isMember("type_name"))
+    {
+        if(!validJsonOfField(1, "type_name", pJson["type_name"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The type_name column cannot be null";
+        return false;
+    }
     return true;
 }
 bool BookTypes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                    const std::vector<std::string> &pMasqueradingVector,
                                                    std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 2)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[0]))
+          {
+              if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[1].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[1]))
+          {
+              if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
+                  return false;
+          }
+        else
+        {
+            err="The " + pMasqueradingVector[1] + " column cannot be null";
+            return false;
+        }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -135,18 +380,48 @@ bool BookTypes::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool BookTypes::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("type_id"))
+    {
+        if(!validJsonOfField(0, "type_id", pJson["type_id"], err, false))
+            return false;
+    }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+    if(pJson.isMember("type_name"))
+    {
+        if(!validJsonOfField(1, "type_name", pJson["type_name"], err, false))
+            return false;
+    }
     return true;
 }
 bool BookTypes::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 2)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+      {
+          if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
+              return false;
+      }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+      if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+      {
+          if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
+              return false;
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -163,6 +438,43 @@ bool BookTypes::validJsonOfField(size_t index,
 {
     switch(index)
     {
+        case 0:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(isForCreation)
+            {
+                err="The automatic primary key cannot be set";
+                return false;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 1:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
+                return false;
+            }
+
+            break;
         default:
             err="Internal error in the server";
             return false;

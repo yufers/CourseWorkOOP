@@ -44,14 +44,20 @@ class BooksInUse
   public:
     struct Cols
     {
+        static const std::string _book_in_use_num;
+        static const std::string _reader_num;
+        static const std::string _book_num;
+        static const std::string _issue_date;
+        static const std::string _return_date;
+        static const std::string _return_period;
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
     static const std::string primaryKeyName;
-    using PrimaryKeyType = void;
-    int getPrimaryKey() const { assert(false); return 0; }
+    using PrimaryKeyType = int32_t;
+    const PrimaryKeyType &getPrimaryKey() const;
 
     /**
      * @brief constructor
@@ -95,8 +101,60 @@ class BooksInUse
                           std::string &err,
                           bool isForCreation);
 
+    /**  For column book_in_use_num  */
+    ///Get the value of the column book_in_use_num, returns the default value if the column is null
+    const int32_t &getValueOfBookInUseNum() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getBookInUseNum() const noexcept;
+    ///Set the value of the column book_in_use_num
+    void setBookInUseNum(const int32_t &pBookInUseNum) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 0;  }
+    /**  For column reader_num  */
+    ///Get the value of the column reader_num, returns the default value if the column is null
+    const int32_t &getValueOfReaderNum() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getReaderNum() const noexcept;
+    ///Set the value of the column reader_num
+    void setReaderNum(const int32_t &pReaderNum) noexcept;
+    void setReaderNumToNull() noexcept;
+
+    /**  For column book_num  */
+    ///Get the value of the column book_num, returns the default value if the column is null
+    const int32_t &getValueOfBookNum() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getBookNum() const noexcept;
+    ///Set the value of the column book_num
+    void setBookNum(const int32_t &pBookNum) noexcept;
+    void setBookNumToNull() noexcept;
+
+    /**  For column issue_date  */
+    ///Get the value of the column issue_date, returns the default value if the column is null
+    const ::trantor::Date &getValueOfIssueDate() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getIssueDate() const noexcept;
+    ///Set the value of the column issue_date
+    void setIssueDate(const ::trantor::Date &pIssueDate) noexcept;
+    void setIssueDateToNull() noexcept;
+
+    /**  For column return_date  */
+    ///Get the value of the column return_date, returns the default value if the column is null
+    const ::trantor::Date &getValueOfReturnDate() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<::trantor::Date> &getReturnDate() const noexcept;
+    ///Set the value of the column return_date
+    void setReturnDate(const ::trantor::Date &pReturnDate) noexcept;
+    void setReturnDateToNull() noexcept;
+
+    /**  For column return_period  */
+    ///Get the value of the column return_period, returns the default value if the column is null
+    const int32_t &getValueOfReturnPeriod() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getReturnPeriod() const noexcept;
+    ///Set the value of the column return_period
+    void setReturnPeriod(const int32_t &pReturnPeriod) noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 6;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -117,6 +175,12 @@ class BooksInUse
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
+    std::shared_ptr<int32_t> bookInUseNum_;
+    std::shared_ptr<int32_t> readerNum_;
+    std::shared_ptr<int32_t> bookNum_;
+    std::shared_ptr<::trantor::Date> issueDate_;
+    std::shared_ptr<::trantor::Date> returnDate_;
+    std::shared_ptr<int32_t> returnPeriod_;
     struct MetaData
     {
         const std::string colName_;
@@ -128,17 +192,17 @@ class BooksInUse
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    //bool dirtyFlag_[0]={ false };
+    bool dirtyFlag_[6]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="select * from " + tableName + " where book_in_use_num = $1";
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="delete from " + tableName + " where book_in_use_num = $1";
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -146,6 +210,35 @@ class BooksInUse
         std::string sql="insert into " + tableName + " (";
         size_t parametersCount = 0;
         needSelection = false;
+            sql += "book_in_use_num,";
+            ++parametersCount;
+        if(dirtyFlag_[1])
+        {
+            sql += "reader_num,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[2])
+        {
+            sql += "book_num,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[3])
+        {
+            sql += "issue_date,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[4])
+        {
+            sql += "return_date,";
+            ++parametersCount;
+        }
+        sql += "return_period,";
+        ++parametersCount;
+        if(!dirtyFlag_[5])
+        {
+            needSelection=true;
+        }
+        needSelection=true;
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -157,6 +250,36 @@ class BooksInUse
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+        sql +="default,";
+        if(dirtyFlag_[1])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[2])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[3])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[4])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[5])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);

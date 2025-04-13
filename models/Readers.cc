@@ -13,11 +13,19 @@ using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::library;
 
+const std::string Readers::Cols::_reader_num = "\"reader_num\"";
+const std::string Readers::Cols::_reader_name = "\"reader_name\"";
+const std::string Readers::Cols::_reader_address = "\"reader_address\"";
+const std::string Readers::Cols::_reader_phone = "\"reader_phone\"";
 const std::string Readers::primaryKeyName = "reader_num";
 const bool Readers::hasPrimaryKey = true;
 const std::string Readers::tableName = "\"readers\"";
 
 const std::vector<typename Readers::MetaData> Readers::metaData_={
+{"reader_num","int32_t","integer",4,1,1,1},
+{"reader_name","std::string","character varying",100,0,0,1},
+{"reader_address","std::string","character varying",100,0,0,0},
+{"reader_phone","std::string","character varying",100,0,0,1}
 };
 const std::string &Readers::getColumnName(size_t index) noexcept(false)
 {
@@ -28,45 +36,300 @@ Readers::Readers(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+        if(!r["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>(r["reader_num"].as<int32_t>());
+        }
+        if(!r["reader_name"].isNull())
+        {
+            readerName_=std::make_shared<std::string>(r["reader_name"].as<std::string>());
+        }
+        if(!r["reader_address"].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(r["reader_address"].as<std::string>());
+        }
+        if(!r["reader_phone"].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(r["reader_phone"].as<std::string>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 0 > r.size())
+        if(offset + 4 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
         }
         size_t index;
+        index = offset + 0;
+        if(!r[index].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 1;
+        if(!r[index].isNull())
+        {
+            readerName_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 2;
+        if(!r[index].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
+        index = offset + 3;
+        if(!r[index].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(r[index].as<std::string>());
+        }
     }
 
 }
 
 Readers::Readers(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        dirtyFlag_[0] = true;
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            readerName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+        }
+    }
+    if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson[pMasqueradingVector[2]].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
     }
 }
 
 Readers::Readers(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("reader_num"))
+    {
+        dirtyFlag_[0]=true;
+        if(!pJson["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson["reader_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("reader_name"))
+    {
+        dirtyFlag_[1]=true;
+        if(!pJson["reader_name"].isNull())
+        {
+            readerName_=std::make_shared<std::string>(pJson["reader_name"].asString());
+        }
+    }
+    if(pJson.isMember("reader_address"))
+    {
+        dirtyFlag_[2]=true;
+        if(!pJson["reader_address"].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(pJson["reader_address"].asString());
+        }
+    }
+    if(pJson.isMember("reader_phone"))
+    {
+        dirtyFlag_[3]=true;
+        if(!pJson["reader_phone"].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(pJson["reader_phone"].asString());
+        }
+    }
 }
 
 void Readers::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 4)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            readerName_=std::make_shared<std::string>(pJson[pMasqueradingVector[1]].asString());
+        }
+    }
+    if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson[pMasqueradingVector[2]].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(pJson[pMasqueradingVector[2]].asString());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(pJson[pMasqueradingVector[3]].asString());
+        }
     }
 }
 
 void Readers::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("reader_num"))
+    {
+        if(!pJson["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson["reader_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("reader_name"))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson["reader_name"].isNull())
+        {
+            readerName_=std::make_shared<std::string>(pJson["reader_name"].asString());
+        }
+    }
+    if(pJson.isMember("reader_address"))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson["reader_address"].isNull())
+        {
+            readerAddress_=std::make_shared<std::string>(pJson["reader_address"].asString());
+        }
+    }
+    if(pJson.isMember("reader_phone"))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson["reader_phone"].isNull())
+        {
+            readerPhone_=std::make_shared<std::string>(pJson["reader_phone"].asString());
+        }
+    }
+}
+
+const int32_t &Readers::getValueOfReaderNum() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(readerNum_)
+        return *readerNum_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &Readers::getReaderNum() const noexcept
+{
+    return readerNum_;
+}
+void Readers::setReaderNum(const int32_t &pReaderNum) noexcept
+{
+    readerNum_ = std::make_shared<int32_t>(pReaderNum);
+    dirtyFlag_[0] = true;
+}
+const typename Readers::PrimaryKeyType & Readers::getPrimaryKey() const
+{
+    assert(readerNum_);
+    return *readerNum_;
+}
+
+const std::string &Readers::getValueOfReaderName() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(readerName_)
+        return *readerName_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Readers::getReaderName() const noexcept
+{
+    return readerName_;
+}
+void Readers::setReaderName(const std::string &pReaderName) noexcept
+{
+    readerName_ = std::make_shared<std::string>(pReaderName);
+    dirtyFlag_[1] = true;
+}
+void Readers::setReaderName(std::string &&pReaderName) noexcept
+{
+    readerName_ = std::make_shared<std::string>(std::move(pReaderName));
+    dirtyFlag_[1] = true;
+}
+
+const std::string &Readers::getValueOfReaderAddress() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(readerAddress_)
+        return *readerAddress_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Readers::getReaderAddress() const noexcept
+{
+    return readerAddress_;
+}
+void Readers::setReaderAddress(const std::string &pReaderAddress) noexcept
+{
+    readerAddress_ = std::make_shared<std::string>(pReaderAddress);
+    dirtyFlag_[2] = true;
+}
+void Readers::setReaderAddress(std::string &&pReaderAddress) noexcept
+{
+    readerAddress_ = std::make_shared<std::string>(std::move(pReaderAddress));
+    dirtyFlag_[2] = true;
+}
+void Readers::setReaderAddressToNull() noexcept
+{
+    readerAddress_.reset();
+    dirtyFlag_[2] = true;
+}
+
+const std::string &Readers::getValueOfReaderPhone() const noexcept
+{
+    static const std::string defaultValue = std::string();
+    if(readerPhone_)
+        return *readerPhone_;
+    return defaultValue;
+}
+const std::shared_ptr<std::string> &Readers::getReaderPhone() const noexcept
+{
+    return readerPhone_;
+}
+void Readers::setReaderPhone(const std::string &pReaderPhone) noexcept
+{
+    readerPhone_ = std::make_shared<std::string>(pReaderPhone);
+    dirtyFlag_[3] = true;
+}
+void Readers::setReaderPhone(std::string &&pReaderPhone) noexcept
+{
+    readerPhone_ = std::make_shared<std::string>(std::move(pReaderPhone));
+    dirtyFlag_[3] = true;
 }
 
 void Readers::updateId(const uint64_t id)
@@ -76,26 +339,139 @@ void Readers::updateId(const uint64_t id)
 const std::vector<std::string> &Readers::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
+        "reader_name",
+        "reader_address",
+        "reader_phone"
     };
     return inCols;
 }
 
 void Readers::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getReaderName())
+        {
+            binder << getValueOfReaderName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
+        if(getReaderAddress())
+        {
+            binder << getValueOfReaderAddress();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getReaderPhone())
+        {
+            binder << getValueOfReaderPhone();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> Readers::updateColumns() const
 {
     std::vector<std::string> ret;
+    if(dirtyFlag_[1])
+    {
+        ret.push_back(getColumnName(1));
+    }
+    if(dirtyFlag_[2])
+    {
+        ret.push_back(getColumnName(2));
+    }
+    if(dirtyFlag_[3])
+    {
+        ret.push_back(getColumnName(3));
+    }
     return ret;
 }
 
 void Readers::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getReaderName())
+        {
+            binder << getValueOfReaderName();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
+        if(getReaderAddress())
+        {
+            binder << getValueOfReaderAddress();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getReaderPhone())
+        {
+            binder << getValueOfReaderPhone();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value Readers::toJson() const
 {
     Json::Value ret;
+    if(getReaderNum())
+    {
+        ret["reader_num"]=getValueOfReaderNum();
+    }
+    else
+    {
+        ret["reader_num"]=Json::Value();
+    }
+    if(getReaderName())
+    {
+        ret["reader_name"]=getValueOfReaderName();
+    }
+    else
+    {
+        ret["reader_name"]=Json::Value();
+    }
+    if(getReaderAddress())
+    {
+        ret["reader_address"]=getValueOfReaderAddress();
+    }
+    else
+    {
+        ret["reader_address"]=Json::Value();
+    }
+    if(getReaderPhone())
+    {
+        ret["reader_phone"]=getValueOfReaderPhone();
+    }
+    else
+    {
+        ret["reader_phone"]=Json::Value();
+    }
     return ret;
 }
 
@@ -103,28 +479,176 @@ Json::Value Readers::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 0)
+    if(pMasqueradingVector.size() == 4)
     {
+        if(!pMasqueradingVector[0].empty())
+        {
+            if(getReaderNum())
+            {
+                ret[pMasqueradingVector[0]]=getValueOfReaderNum();
+            }
+            else
+            {
+                ret[pMasqueradingVector[0]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[1].empty())
+        {
+            if(getReaderName())
+            {
+                ret[pMasqueradingVector[1]]=getValueOfReaderName();
+            }
+            else
+            {
+                ret[pMasqueradingVector[1]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[2].empty())
+        {
+            if(getReaderAddress())
+            {
+                ret[pMasqueradingVector[2]]=getValueOfReaderAddress();
+            }
+            else
+            {
+                ret[pMasqueradingVector[2]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[3].empty())
+        {
+            if(getReaderPhone())
+            {
+                ret[pMasqueradingVector[3]]=getValueOfReaderPhone();
+            }
+            else
+            {
+                ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+    if(getReaderNum())
+    {
+        ret["reader_num"]=getValueOfReaderNum();
+    }
+    else
+    {
+        ret["reader_num"]=Json::Value();
+    }
+    if(getReaderName())
+    {
+        ret["reader_name"]=getValueOfReaderName();
+    }
+    else
+    {
+        ret["reader_name"]=Json::Value();
+    }
+    if(getReaderAddress())
+    {
+        ret["reader_address"]=getValueOfReaderAddress();
+    }
+    else
+    {
+        ret["reader_address"]=Json::Value();
+    }
+    if(getReaderPhone())
+    {
+        ret["reader_phone"]=getValueOfReaderPhone();
+    }
+    else
+    {
+        ret["reader_phone"]=Json::Value();
+    }
     return ret;
 }
 
 bool Readers::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("reader_num"))
+    {
+        if(!validJsonOfField(0, "reader_num", pJson["reader_num"], err, true))
+            return false;
+    }
+    if(pJson.isMember("reader_name"))
+    {
+        if(!validJsonOfField(1, "reader_name", pJson["reader_name"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The reader_name column cannot be null";
+        return false;
+    }
+    if(pJson.isMember("reader_address"))
+    {
+        if(!validJsonOfField(2, "reader_address", pJson["reader_address"], err, true))
+            return false;
+    }
+    if(pJson.isMember("reader_phone"))
+    {
+        if(!validJsonOfField(3, "reader_phone", pJson["reader_phone"], err, true))
+            return false;
+    }
+    else
+    {
+        err="The reader_phone column cannot be null";
+        return false;
+    }
     return true;
 }
 bool Readers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                  const std::vector<std::string> &pMasqueradingVector,
                                                  std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[0]))
+          {
+              if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[1].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[1]))
+          {
+              if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
+                  return false;
+          }
+        else
+        {
+            err="The " + pMasqueradingVector[1] + " column cannot be null";
+            return false;
+        }
+      }
+      if(!pMasqueradingVector[2].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[2]))
+          {
+              if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[3].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[3]))
+          {
+              if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
+                  return false;
+          }
+        else
+        {
+            err="The " + pMasqueradingVector[3] + " column cannot be null";
+            return false;
+        }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -135,18 +659,68 @@ bool Readers::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool Readers::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("reader_num"))
+    {
+        if(!validJsonOfField(0, "reader_num", pJson["reader_num"], err, false))
+            return false;
+    }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+    if(pJson.isMember("reader_name"))
+    {
+        if(!validJsonOfField(1, "reader_name", pJson["reader_name"], err, false))
+            return false;
+    }
+    if(pJson.isMember("reader_address"))
+    {
+        if(!validJsonOfField(2, "reader_address", pJson["reader_address"], err, false))
+            return false;
+    }
+    if(pJson.isMember("reader_phone"))
+    {
+        if(!validJsonOfField(3, "reader_phone", pJson["reader_phone"], err, false))
+            return false;
+    }
     return true;
 }
 bool Readers::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                const std::vector<std::string> &pMasqueradingVector,
                                                std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 4)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+      {
+          if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
+              return false;
+      }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+      if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+      {
+          if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+      {
+          if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+      {
+          if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
+              return false;
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -163,6 +737,82 @@ bool Readers::validJsonOfField(size_t index,
 {
     switch(index)
     {
+        case 0:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(isForCreation)
+            {
+                err="The automatic primary key cannot be set";
+                return false;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 1:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
+                return false;
+            }
+
+            break;
+        case 2:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
+                return false;
+            }
+
+            break;
+        case 3:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            if(pJson.isString() && std::strlen(pJson.asCString()) > 100)
+            {
+                err="String length exceeds limit for the " +
+                    fieldName +
+                    " field (the maximum value is 100)";
+                return false;
+            }
+
+            break;
         default:
             err="Internal error in the server";
             return false;

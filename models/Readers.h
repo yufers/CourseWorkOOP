@@ -44,14 +44,18 @@ class Readers
   public:
     struct Cols
     {
+        static const std::string _reader_num;
+        static const std::string _reader_name;
+        static const std::string _reader_address;
+        static const std::string _reader_phone;
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
     static const std::string primaryKeyName;
-    using PrimaryKeyType = void;
-    int getPrimaryKey() const { assert(false); return 0; }
+    using PrimaryKeyType = int32_t;
+    const PrimaryKeyType &getPrimaryKey() const;
 
     /**
      * @brief constructor
@@ -95,8 +99,44 @@ class Readers
                           std::string &err,
                           bool isForCreation);
 
+    /**  For column reader_num  */
+    ///Get the value of the column reader_num, returns the default value if the column is null
+    const int32_t &getValueOfReaderNum() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getReaderNum() const noexcept;
+    ///Set the value of the column reader_num
+    void setReaderNum(const int32_t &pReaderNum) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 0;  }
+    /**  For column reader_name  */
+    ///Get the value of the column reader_name, returns the default value if the column is null
+    const std::string &getValueOfReaderName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getReaderName() const noexcept;
+    ///Set the value of the column reader_name
+    void setReaderName(const std::string &pReaderName) noexcept;
+    void setReaderName(std::string &&pReaderName) noexcept;
+
+    /**  For column reader_address  */
+    ///Get the value of the column reader_address, returns the default value if the column is null
+    const std::string &getValueOfReaderAddress() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getReaderAddress() const noexcept;
+    ///Set the value of the column reader_address
+    void setReaderAddress(const std::string &pReaderAddress) noexcept;
+    void setReaderAddress(std::string &&pReaderAddress) noexcept;
+    void setReaderAddressToNull() noexcept;
+
+    /**  For column reader_phone  */
+    ///Get the value of the column reader_phone, returns the default value if the column is null
+    const std::string &getValueOfReaderPhone() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getReaderPhone() const noexcept;
+    ///Set the value of the column reader_phone
+    void setReaderPhone(const std::string &pReaderPhone) noexcept;
+    void setReaderPhone(std::string &&pReaderPhone) noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 4;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -117,6 +157,10 @@ class Readers
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
+    std::shared_ptr<int32_t> readerNum_;
+    std::shared_ptr<std::string> readerName_;
+    std::shared_ptr<std::string> readerAddress_;
+    std::shared_ptr<std::string> readerPhone_;
     struct MetaData
     {
         const std::string colName_;
@@ -128,17 +172,17 @@ class Readers
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    //bool dirtyFlag_[0]={ false };
+    bool dirtyFlag_[4]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="select * from " + tableName + " where reader_num = $1";
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="delete from " + tableName + " where reader_num = $1";
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -146,6 +190,24 @@ class Readers
         std::string sql="insert into " + tableName + " (";
         size_t parametersCount = 0;
         needSelection = false;
+            sql += "reader_num,";
+            ++parametersCount;
+        if(dirtyFlag_[1])
+        {
+            sql += "reader_name,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[2])
+        {
+            sql += "reader_address,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[3])
+        {
+            sql += "reader_phone,";
+            ++parametersCount;
+        }
+        needSelection=true;
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -157,6 +219,22 @@ class Readers
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+        sql +="default,";
+        if(dirtyFlag_[1])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[2])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[3])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);

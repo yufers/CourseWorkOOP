@@ -20,6 +20,7 @@ int main()
     // Load config file
     drogon::app()
         .loadConfigFile("./config.json");
+
     // drogon::app().loadConfigFile("./config.yaml");
 
     app()
@@ -45,6 +46,7 @@ int main()
            std::function<void(const HttpResponsePtr &)> &&callback)
         {
             std::cout << "Test 1" << std::endl;
+
             drogon::HttpViewData data;
             data.insert("title", std::string("TestView"));
             auto res = drogon::HttpResponse::newHttpViewResponse("TestView", data);

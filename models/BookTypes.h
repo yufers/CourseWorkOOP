@@ -44,14 +44,16 @@ class BookTypes
   public:
     struct Cols
     {
+        static const std::string _type_id;
+        static const std::string _type_name;
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
     static const std::string primaryKeyName;
-    using PrimaryKeyType = void;
-    int getPrimaryKey() const { assert(false); return 0; }
+    using PrimaryKeyType = int32_t;
+    const PrimaryKeyType &getPrimaryKey() const;
 
     /**
      * @brief constructor
@@ -95,8 +97,25 @@ class BookTypes
                           std::string &err,
                           bool isForCreation);
 
+    /**  For column type_id  */
+    ///Get the value of the column type_id, returns the default value if the column is null
+    const int32_t &getValueOfTypeId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getTypeId() const noexcept;
+    ///Set the value of the column type_id
+    void setTypeId(const int32_t &pTypeId) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 0;  }
+    /**  For column type_name  */
+    ///Get the value of the column type_name, returns the default value if the column is null
+    const std::string &getValueOfTypeName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getTypeName() const noexcept;
+    ///Set the value of the column type_name
+    void setTypeName(const std::string &pTypeName) noexcept;
+    void setTypeName(std::string &&pTypeName) noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 2;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -117,6 +136,8 @@ class BookTypes
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
+    std::shared_ptr<int32_t> typeId_;
+    std::shared_ptr<std::string> typeName_;
     struct MetaData
     {
         const std::string colName_;
@@ -128,17 +149,17 @@ class BookTypes
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    //bool dirtyFlag_[0]={ false };
+    bool dirtyFlag_[2]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="select * from " + tableName + " where type_id = $1";
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="delete from " + tableName + " where type_id = $1";
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -146,6 +167,14 @@ class BookTypes
         std::string sql="insert into " + tableName + " (";
         size_t parametersCount = 0;
         needSelection = false;
+            sql += "type_id,";
+            ++parametersCount;
+        if(dirtyFlag_[1])
+        {
+            sql += "type_name,";
+            ++parametersCount;
+        }
+        needSelection=true;
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -157,6 +186,12 @@ class BookTypes
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+        sql +="default,";
+        if(dirtyFlag_[1])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);

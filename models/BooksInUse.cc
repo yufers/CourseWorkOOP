@@ -13,11 +13,23 @@ using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::library;
 
+const std::string BooksInUse::Cols::_book_in_use_num = "\"book_in_use_num\"";
+const std::string BooksInUse::Cols::_reader_num = "\"reader_num\"";
+const std::string BooksInUse::Cols::_book_num = "\"book_num\"";
+const std::string BooksInUse::Cols::_issue_date = "\"issue_date\"";
+const std::string BooksInUse::Cols::_return_date = "\"return_date\"";
+const std::string BooksInUse::Cols::_return_period = "\"return_period\"";
 const std::string BooksInUse::primaryKeyName = "book_in_use_num";
 const bool BooksInUse::hasPrimaryKey = true;
 const std::string BooksInUse::tableName = "\"books_in_use\"";
 
 const std::vector<typename BooksInUse::MetaData> BooksInUse::metaData_={
+{"book_in_use_num","int32_t","integer",4,1,1,1},
+{"reader_num","int32_t","integer",4,0,0,0},
+{"book_num","int32_t","integer",4,0,0,0},
+{"issue_date","::trantor::Date","date",0,0,0,0},
+{"return_date","::trantor::Date","date",0,0,0,0},
+{"return_period","int32_t","integer",4,0,0,1}
 };
 const std::string &BooksInUse::getColumnName(size_t index) noexcept(false)
 {
@@ -28,45 +40,476 @@ BooksInUse::BooksInUse(const Row &r, const ssize_t indexOffset) noexcept
 {
     if(indexOffset < 0)
     {
+        if(!r["book_in_use_num"].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>(r["book_in_use_num"].as<int32_t>());
+        }
+        if(!r["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>(r["reader_num"].as<int32_t>());
+        }
+        if(!r["book_num"].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>(r["book_num"].as<int32_t>());
+        }
+        if(!r["issue_date"].isNull())
+        {
+            auto daysStr = r["issue_date"].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+        if(!r["return_date"].isNull())
+        {
+            auto daysStr = r["return_date"].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+        if(!r["return_period"].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>(r["return_period"].as<int32_t>());
+        }
     }
     else
     {
         size_t offset = (size_t)indexOffset;
-        if(offset + 0 > r.size())
+        if(offset + 6 > r.size())
         {
             LOG_FATAL << "Invalid SQL result for this model";
             return;
         }
         size_t index;
+        index = offset + 0;
+        if(!r[index].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 1;
+        if(!r[index].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 2;
+        if(!r[index].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
+        index = offset + 3;
+        if(!r[index].isNull())
+        {
+            auto daysStr = r[index].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+        index = offset + 4;
+        if(!r[index].isNull())
+        {
+            auto daysStr = r[index].as<std::string>();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+        index = offset + 5;
+        if(!r[index].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>(r[index].as<int32_t>());
+        }
     }
 
 }
 
 BooksInUse::BooksInUse(const Json::Value &pJson, const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 6)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        dirtyFlag_[0] = true;
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson[pMasqueradingVector[2]].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            auto daysStr = pJson[pMasqueradingVector[3]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto daysStr = pJson[pMasqueradingVector[4]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+    {
+        dirtyFlag_[5] = true;
+        if(!pJson[pMasqueradingVector[5]].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
+        }
     }
 }
 
 BooksInUse::BooksInUse(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("book_in_use_num"))
+    {
+        dirtyFlag_[0]=true;
+        if(!pJson["book_in_use_num"].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>((int32_t)pJson["book_in_use_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("reader_num"))
+    {
+        dirtyFlag_[1]=true;
+        if(!pJson["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson["reader_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("book_num"))
+    {
+        dirtyFlag_[2]=true;
+        if(!pJson["book_num"].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>((int32_t)pJson["book_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("issue_date"))
+    {
+        dirtyFlag_[3]=true;
+        if(!pJson["issue_date"].isNull())
+        {
+            auto daysStr = pJson["issue_date"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(pJson.isMember("return_date"))
+    {
+        dirtyFlag_[4]=true;
+        if(!pJson["return_date"].isNull())
+        {
+            auto daysStr = pJson["return_date"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(pJson.isMember("return_period"))
+    {
+        dirtyFlag_[5]=true;
+        if(!pJson["return_period"].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>((int32_t)pJson["return_period"].asInt64());
+        }
+    }
 }
 
 void BooksInUse::updateByMasqueradedJson(const Json::Value &pJson,
                                             const std::vector<std::string> &pMasqueradingVector) noexcept(false)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 6)
     {
         LOG_ERROR << "Bad masquerading vector";
         return;
+    }
+    if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+    {
+        if(!pJson[pMasqueradingVector[0]].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[0]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson[pMasqueradingVector[1]].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[1]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson[pMasqueradingVector[2]].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[2]].asInt64());
+        }
+    }
+    if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson[pMasqueradingVector[3]].isNull())
+        {
+            auto daysStr = pJson[pMasqueradingVector[3]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson[pMasqueradingVector[4]].isNull())
+        {
+            auto daysStr = pJson[pMasqueradingVector[4]].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+    {
+        dirtyFlag_[5] = true;
+        if(!pJson[pMasqueradingVector[5]].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>((int32_t)pJson[pMasqueradingVector[5]].asInt64());
+        }
     }
 }
 
 void BooksInUse::updateByJson(const Json::Value &pJson) noexcept(false)
 {
+    if(pJson.isMember("book_in_use_num"))
+    {
+        if(!pJson["book_in_use_num"].isNull())
+        {
+            bookInUseNum_=std::make_shared<int32_t>((int32_t)pJson["book_in_use_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("reader_num"))
+    {
+        dirtyFlag_[1] = true;
+        if(!pJson["reader_num"].isNull())
+        {
+            readerNum_=std::make_shared<int32_t>((int32_t)pJson["reader_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("book_num"))
+    {
+        dirtyFlag_[2] = true;
+        if(!pJson["book_num"].isNull())
+        {
+            bookNum_=std::make_shared<int32_t>((int32_t)pJson["book_num"].asInt64());
+        }
+    }
+    if(pJson.isMember("issue_date"))
+    {
+        dirtyFlag_[3] = true;
+        if(!pJson["issue_date"].isNull())
+        {
+            auto daysStr = pJson["issue_date"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            issueDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(pJson.isMember("return_date"))
+    {
+        dirtyFlag_[4] = true;
+        if(!pJson["return_date"].isNull())
+        {
+            auto daysStr = pJson["return_date"].asString();
+            struct tm stm;
+            memset(&stm,0,sizeof(stm));
+            strptime(daysStr.c_str(),"%Y-%m-%d",&stm);
+            time_t t = mktime(&stm);
+            returnDate_=std::make_shared<::trantor::Date>(t*1000000);
+        }
+    }
+    if(pJson.isMember("return_period"))
+    {
+        dirtyFlag_[5] = true;
+        if(!pJson["return_period"].isNull())
+        {
+            returnPeriod_=std::make_shared<int32_t>((int32_t)pJson["return_period"].asInt64());
+        }
+    }
+}
+
+const int32_t &BooksInUse::getValueOfBookInUseNum() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(bookInUseNum_)
+        return *bookInUseNum_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &BooksInUse::getBookInUseNum() const noexcept
+{
+    return bookInUseNum_;
+}
+void BooksInUse::setBookInUseNum(const int32_t &pBookInUseNum) noexcept
+{
+    bookInUseNum_ = std::make_shared<int32_t>(pBookInUseNum);
+    dirtyFlag_[0] = true;
+}
+const typename BooksInUse::PrimaryKeyType & BooksInUse::getPrimaryKey() const
+{
+    assert(bookInUseNum_);
+    return *bookInUseNum_;
+}
+
+const int32_t &BooksInUse::getValueOfReaderNum() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(readerNum_)
+        return *readerNum_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &BooksInUse::getReaderNum() const noexcept
+{
+    return readerNum_;
+}
+void BooksInUse::setReaderNum(const int32_t &pReaderNum) noexcept
+{
+    readerNum_ = std::make_shared<int32_t>(pReaderNum);
+    dirtyFlag_[1] = true;
+}
+void BooksInUse::setReaderNumToNull() noexcept
+{
+    readerNum_.reset();
+    dirtyFlag_[1] = true;
+}
+
+const int32_t &BooksInUse::getValueOfBookNum() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(bookNum_)
+        return *bookNum_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &BooksInUse::getBookNum() const noexcept
+{
+    return bookNum_;
+}
+void BooksInUse::setBookNum(const int32_t &pBookNum) noexcept
+{
+    bookNum_ = std::make_shared<int32_t>(pBookNum);
+    dirtyFlag_[2] = true;
+}
+void BooksInUse::setBookNumToNull() noexcept
+{
+    bookNum_.reset();
+    dirtyFlag_[2] = true;
+}
+
+const ::trantor::Date &BooksInUse::getValueOfIssueDate() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(issueDate_)
+        return *issueDate_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &BooksInUse::getIssueDate() const noexcept
+{
+    return issueDate_;
+}
+void BooksInUse::setIssueDate(const ::trantor::Date &pIssueDate) noexcept
+{
+    issueDate_ = std::make_shared<::trantor::Date>(pIssueDate.roundDay());
+    dirtyFlag_[3] = true;
+}
+void BooksInUse::setIssueDateToNull() noexcept
+{
+    issueDate_.reset();
+    dirtyFlag_[3] = true;
+}
+
+const ::trantor::Date &BooksInUse::getValueOfReturnDate() const noexcept
+{
+    static const ::trantor::Date defaultValue = ::trantor::Date();
+    if(returnDate_)
+        return *returnDate_;
+    return defaultValue;
+}
+const std::shared_ptr<::trantor::Date> &BooksInUse::getReturnDate() const noexcept
+{
+    return returnDate_;
+}
+void BooksInUse::setReturnDate(const ::trantor::Date &pReturnDate) noexcept
+{
+    returnDate_ = std::make_shared<::trantor::Date>(pReturnDate.roundDay());
+    dirtyFlag_[4] = true;
+}
+void BooksInUse::setReturnDateToNull() noexcept
+{
+    returnDate_.reset();
+    dirtyFlag_[4] = true;
+}
+
+const int32_t &BooksInUse::getValueOfReturnPeriod() const noexcept
+{
+    static const int32_t defaultValue = int32_t();
+    if(returnPeriod_)
+        return *returnPeriod_;
+    return defaultValue;
+}
+const std::shared_ptr<int32_t> &BooksInUse::getReturnPeriod() const noexcept
+{
+    return returnPeriod_;
+}
+void BooksInUse::setReturnPeriod(const int32_t &pReturnPeriod) noexcept
+{
+    returnPeriod_ = std::make_shared<int32_t>(pReturnPeriod);
+    dirtyFlag_[5] = true;
 }
 
 void BooksInUse::updateId(const uint64_t id)
@@ -76,26 +519,209 @@ void BooksInUse::updateId(const uint64_t id)
 const std::vector<std::string> &BooksInUse::insertColumns() noexcept
 {
     static const std::vector<std::string> inCols={
+        "reader_num",
+        "book_num",
+        "issue_date",
+        "return_date",
+        "return_period"
     };
     return inCols;
 }
 
 void BooksInUse::outputArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getReaderNum())
+        {
+            binder << getValueOfReaderNum();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
+        if(getBookNum())
+        {
+            binder << getValueOfBookNum();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getIssueDate())
+        {
+            binder << getValueOfIssueDate();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
+        if(getReturnDate())
+        {
+            binder << getValueOfReturnDate();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[5])
+    {
+        if(getReturnPeriod())
+        {
+            binder << getValueOfReturnPeriod();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 
 const std::vector<std::string> BooksInUse::updateColumns() const
 {
     std::vector<std::string> ret;
+    if(dirtyFlag_[1])
+    {
+        ret.push_back(getColumnName(1));
+    }
+    if(dirtyFlag_[2])
+    {
+        ret.push_back(getColumnName(2));
+    }
+    if(dirtyFlag_[3])
+    {
+        ret.push_back(getColumnName(3));
+    }
+    if(dirtyFlag_[4])
+    {
+        ret.push_back(getColumnName(4));
+    }
+    if(dirtyFlag_[5])
+    {
+        ret.push_back(getColumnName(5));
+    }
     return ret;
 }
 
 void BooksInUse::updateArgs(drogon::orm::internal::SqlBinder &binder) const
 {
+    if(dirtyFlag_[1])
+    {
+        if(getReaderNum())
+        {
+            binder << getValueOfReaderNum();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[2])
+    {
+        if(getBookNum())
+        {
+            binder << getValueOfBookNum();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[3])
+    {
+        if(getIssueDate())
+        {
+            binder << getValueOfIssueDate();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[4])
+    {
+        if(getReturnDate())
+        {
+            binder << getValueOfReturnDate();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
+    if(dirtyFlag_[5])
+    {
+        if(getReturnPeriod())
+        {
+            binder << getValueOfReturnPeriod();
+        }
+        else
+        {
+            binder << nullptr;
+        }
+    }
 }
 Json::Value BooksInUse::toJson() const
 {
     Json::Value ret;
+    if(getBookInUseNum())
+    {
+        ret["book_in_use_num"]=getValueOfBookInUseNum();
+    }
+    else
+    {
+        ret["book_in_use_num"]=Json::Value();
+    }
+    if(getReaderNum())
+    {
+        ret["reader_num"]=getValueOfReaderNum();
+    }
+    else
+    {
+        ret["reader_num"]=Json::Value();
+    }
+    if(getBookNum())
+    {
+        ret["book_num"]=getValueOfBookNum();
+    }
+    else
+    {
+        ret["book_num"]=Json::Value();
+    }
+    if(getIssueDate())
+    {
+        ret["issue_date"]=getIssueDate()->toDbStringLocal();
+    }
+    else
+    {
+        ret["issue_date"]=Json::Value();
+    }
+    if(getReturnDate())
+    {
+        ret["return_date"]=getReturnDate()->toDbStringLocal();
+    }
+    else
+    {
+        ret["return_date"]=Json::Value();
+    }
+    if(getReturnPeriod())
+    {
+        ret["return_period"]=getValueOfReturnPeriod();
+    }
+    else
+    {
+        ret["return_period"]=Json::Value();
+    }
     return ret;
 }
 
@@ -103,28 +729,220 @@ Json::Value BooksInUse::toMasqueradedJson(
     const std::vector<std::string> &pMasqueradingVector) const
 {
     Json::Value ret;
-    if(pMasqueradingVector.size() == 0)
+    if(pMasqueradingVector.size() == 6)
     {
+        if(!pMasqueradingVector[0].empty())
+        {
+            if(getBookInUseNum())
+            {
+                ret[pMasqueradingVector[0]]=getValueOfBookInUseNum();
+            }
+            else
+            {
+                ret[pMasqueradingVector[0]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[1].empty())
+        {
+            if(getReaderNum())
+            {
+                ret[pMasqueradingVector[1]]=getValueOfReaderNum();
+            }
+            else
+            {
+                ret[pMasqueradingVector[1]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[2].empty())
+        {
+            if(getBookNum())
+            {
+                ret[pMasqueradingVector[2]]=getValueOfBookNum();
+            }
+            else
+            {
+                ret[pMasqueradingVector[2]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[3].empty())
+        {
+            if(getIssueDate())
+            {
+                ret[pMasqueradingVector[3]]=getIssueDate()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[3]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[4].empty())
+        {
+            if(getReturnDate())
+            {
+                ret[pMasqueradingVector[4]]=getReturnDate()->toDbStringLocal();
+            }
+            else
+            {
+                ret[pMasqueradingVector[4]]=Json::Value();
+            }
+        }
+        if(!pMasqueradingVector[5].empty())
+        {
+            if(getReturnPeriod())
+            {
+                ret[pMasqueradingVector[5]]=getValueOfReturnPeriod();
+            }
+            else
+            {
+                ret[pMasqueradingVector[5]]=Json::Value();
+            }
+        }
         return ret;
     }
     LOG_ERROR << "Masquerade failed";
+    if(getBookInUseNum())
+    {
+        ret["book_in_use_num"]=getValueOfBookInUseNum();
+    }
+    else
+    {
+        ret["book_in_use_num"]=Json::Value();
+    }
+    if(getReaderNum())
+    {
+        ret["reader_num"]=getValueOfReaderNum();
+    }
+    else
+    {
+        ret["reader_num"]=Json::Value();
+    }
+    if(getBookNum())
+    {
+        ret["book_num"]=getValueOfBookNum();
+    }
+    else
+    {
+        ret["book_num"]=Json::Value();
+    }
+    if(getIssueDate())
+    {
+        ret["issue_date"]=getIssueDate()->toDbStringLocal();
+    }
+    else
+    {
+        ret["issue_date"]=Json::Value();
+    }
+    if(getReturnDate())
+    {
+        ret["return_date"]=getReturnDate()->toDbStringLocal();
+    }
+    else
+    {
+        ret["return_date"]=Json::Value();
+    }
+    if(getReturnPeriod())
+    {
+        ret["return_period"]=getValueOfReturnPeriod();
+    }
+    else
+    {
+        ret["return_period"]=Json::Value();
+    }
     return ret;
 }
 
 bool BooksInUse::validateJsonForCreation(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("book_in_use_num"))
+    {
+        if(!validJsonOfField(0, "book_in_use_num", pJson["book_in_use_num"], err, true))
+            return false;
+    }
+    if(pJson.isMember("reader_num"))
+    {
+        if(!validJsonOfField(1, "reader_num", pJson["reader_num"], err, true))
+            return false;
+    }
+    if(pJson.isMember("book_num"))
+    {
+        if(!validJsonOfField(2, "book_num", pJson["book_num"], err, true))
+            return false;
+    }
+    if(pJson.isMember("issue_date"))
+    {
+        if(!validJsonOfField(3, "issue_date", pJson["issue_date"], err, true))
+            return false;
+    }
+    if(pJson.isMember("return_date"))
+    {
+        if(!validJsonOfField(4, "return_date", pJson["return_date"], err, true))
+            return false;
+    }
+    if(pJson.isMember("return_period"))
+    {
+        if(!validJsonOfField(5, "return_period", pJson["return_period"], err, true))
+            return false;
+    }
     return true;
 }
 bool BooksInUse::validateMasqueradedJsonForCreation(const Json::Value &pJson,
                                                     const std::vector<std::string> &pMasqueradingVector,
                                                     std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 6)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[0]))
+          {
+              if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[1].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[1]))
+          {
+              if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[2].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[2]))
+          {
+              if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[3].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[3]))
+          {
+              if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[4].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[4]))
+          {
+              if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, true))
+                  return false;
+          }
+      }
+      if(!pMasqueradingVector[5].empty())
+      {
+          if(pJson.isMember(pMasqueradingVector[5]))
+          {
+              if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, true))
+                  return false;
+          }
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -135,18 +953,88 @@ bool BooksInUse::validateMasqueradedJsonForCreation(const Json::Value &pJson,
 }
 bool BooksInUse::validateJsonForUpdate(const Json::Value &pJson, std::string &err)
 {
+    if(pJson.isMember("book_in_use_num"))
+    {
+        if(!validJsonOfField(0, "book_in_use_num", pJson["book_in_use_num"], err, false))
+            return false;
+    }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+    if(pJson.isMember("reader_num"))
+    {
+        if(!validJsonOfField(1, "reader_num", pJson["reader_num"], err, false))
+            return false;
+    }
+    if(pJson.isMember("book_num"))
+    {
+        if(!validJsonOfField(2, "book_num", pJson["book_num"], err, false))
+            return false;
+    }
+    if(pJson.isMember("issue_date"))
+    {
+        if(!validJsonOfField(3, "issue_date", pJson["issue_date"], err, false))
+            return false;
+    }
+    if(pJson.isMember("return_date"))
+    {
+        if(!validJsonOfField(4, "return_date", pJson["return_date"], err, false))
+            return false;
+    }
+    if(pJson.isMember("return_period"))
+    {
+        if(!validJsonOfField(5, "return_period", pJson["return_period"], err, false))
+            return false;
+    }
     return true;
 }
 bool BooksInUse::validateMasqueradedJsonForUpdate(const Json::Value &pJson,
                                                   const std::vector<std::string> &pMasqueradingVector,
                                                   std::string &err)
 {
-    if(pMasqueradingVector.size() != 0)
+    if(pMasqueradingVector.size() != 6)
     {
         err = "Bad masquerading vector";
         return false;
     }
     try {
+      if(!pMasqueradingVector[0].empty() && pJson.isMember(pMasqueradingVector[0]))
+      {
+          if(!validJsonOfField(0, pMasqueradingVector[0], pJson[pMasqueradingVector[0]], err, false))
+              return false;
+      }
+    else
+    {
+        err = "The value of primary key must be set in the json object for update";
+        return false;
+    }
+      if(!pMasqueradingVector[1].empty() && pJson.isMember(pMasqueradingVector[1]))
+      {
+          if(!validJsonOfField(1, pMasqueradingVector[1], pJson[pMasqueradingVector[1]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[2].empty() && pJson.isMember(pMasqueradingVector[2]))
+      {
+          if(!validJsonOfField(2, pMasqueradingVector[2], pJson[pMasqueradingVector[2]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[3].empty() && pJson.isMember(pMasqueradingVector[3]))
+      {
+          if(!validJsonOfField(3, pMasqueradingVector[3], pJson[pMasqueradingVector[3]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[4].empty() && pJson.isMember(pMasqueradingVector[4]))
+      {
+          if(!validJsonOfField(4, pMasqueradingVector[4], pJson[pMasqueradingVector[4]], err, false))
+              return false;
+      }
+      if(!pMasqueradingVector[5].empty() && pJson.isMember(pMasqueradingVector[5]))
+      {
+          if(!validJsonOfField(5, pMasqueradingVector[5], pJson[pMasqueradingVector[5]], err, false))
+              return false;
+      }
     }
     catch(const Json::LogicError &e)
     {
@@ -163,6 +1051,79 @@ bool BooksInUse::validJsonOfField(size_t index,
 {
     switch(index)
     {
+        case 0:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(isForCreation)
+            {
+                err="The automatic primary key cannot be set";
+                return false;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 1:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 2:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 3:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 4:
+            if(pJson.isNull())
+            {
+                return true;
+            }
+            if(!pJson.isString())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
+        case 5:
+            if(pJson.isNull())
+            {
+                err="The " + fieldName + " column cannot be null";
+                return false;
+            }
+            if(!pJson.isInt())
+            {
+                err="Type error in the "+fieldName+" field";
+                return false;
+            }
+            break;
         default:
             err="Internal error in the server";
             return false;

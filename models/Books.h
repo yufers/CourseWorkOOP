@@ -44,14 +44,19 @@ class Books
   public:
     struct Cols
     {
+        static const std::string _book_num;
+        static const std::string _book_author;
+        static const std::string _book_name;
+        static const std::string _book_count;
+        static const std::string _type_id;
     };
 
     static const int primaryKeyNumber;
     static const std::string tableName;
     static const bool hasPrimaryKey;
     static const std::string primaryKeyName;
-    using PrimaryKeyType = void;
-    int getPrimaryKey() const { assert(false); return 0; }
+    using PrimaryKeyType = int32_t;
+    const PrimaryKeyType &getPrimaryKey() const;
 
     /**
      * @brief constructor
@@ -95,8 +100,53 @@ class Books
                           std::string &err,
                           bool isForCreation);
 
+    /**  For column book_num  */
+    ///Get the value of the column book_num, returns the default value if the column is null
+    const int32_t &getValueOfBookNum() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getBookNum() const noexcept;
+    ///Set the value of the column book_num
+    void setBookNum(const int32_t &pBookNum) noexcept;
 
-    static size_t getColumnNumber() noexcept {  return 0;  }
+    /**  For column book_author  */
+    ///Get the value of the column book_author, returns the default value if the column is null
+    const std::string &getValueOfBookAuthor() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getBookAuthor() const noexcept;
+    ///Set the value of the column book_author
+    void setBookAuthor(const std::string &pBookAuthor) noexcept;
+    void setBookAuthor(std::string &&pBookAuthor) noexcept;
+    void setBookAuthorToNull() noexcept;
+
+    /**  For column book_name  */
+    ///Get the value of the column book_name, returns the default value if the column is null
+    const std::string &getValueOfBookName() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<std::string> &getBookName() const noexcept;
+    ///Set the value of the column book_name
+    void setBookName(const std::string &pBookName) noexcept;
+    void setBookName(std::string &&pBookName) noexcept;
+    void setBookNameToNull() noexcept;
+
+    /**  For column book_count  */
+    ///Get the value of the column book_count, returns the default value if the column is null
+    const int32_t &getValueOfBookCount() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getBookCount() const noexcept;
+    ///Set the value of the column book_count
+    void setBookCount(const int32_t &pBookCount) noexcept;
+
+    /**  For column type_id  */
+    ///Get the value of the column type_id, returns the default value if the column is null
+    const int32_t &getValueOfTypeId() const noexcept;
+    ///Return a shared_ptr object pointing to the column const value, or an empty shared_ptr object if the column is null
+    const std::shared_ptr<int32_t> &getTypeId() const noexcept;
+    ///Set the value of the column type_id
+    void setTypeId(const int32_t &pTypeId) noexcept;
+    void setTypeIdToNull() noexcept;
+
+
+    static size_t getColumnNumber() noexcept {  return 5;  }
     static const std::string &getColumnName(size_t index) noexcept(false);
 
     Json::Value toJson() const;
@@ -117,6 +167,11 @@ class Books
     void updateArgs(drogon::orm::internal::SqlBinder &binder) const;
     ///For mysql or sqlite3
     void updateId(const uint64_t id);
+    std::shared_ptr<int32_t> bookNum_;
+    std::shared_ptr<std::string> bookAuthor_;
+    std::shared_ptr<std::string> bookName_;
+    std::shared_ptr<int32_t> bookCount_;
+    std::shared_ptr<int32_t> typeId_;
     struct MetaData
     {
         const std::string colName_;
@@ -128,17 +183,17 @@ class Books
         const bool notNull_;
     };
     static const std::vector<MetaData> metaData_;
-    //bool dirtyFlag_[0]={ false };
+    bool dirtyFlag_[5]={ false };
   public:
     static const std::string &sqlForFindingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="select * from " + tableName + " where book_num = $1";
         return sql;
     }
 
     static const std::string &sqlForDeletingByPrimaryKey()
     {
-        static const std::string sql="";
+        static const std::string sql="delete from " + tableName + " where book_num = $1";
         return sql;
     }
     std::string sqlForInserting(bool &needSelection) const
@@ -146,6 +201,30 @@ class Books
         std::string sql="insert into " + tableName + " (";
         size_t parametersCount = 0;
         needSelection = false;
+            sql += "book_num,";
+            ++parametersCount;
+        if(dirtyFlag_[1])
+        {
+            sql += "book_author,";
+            ++parametersCount;
+        }
+        if(dirtyFlag_[2])
+        {
+            sql += "book_name,";
+            ++parametersCount;
+        }
+        sql += "book_count,";
+        ++parametersCount;
+        if(!dirtyFlag_[3])
+        {
+            needSelection=true;
+        }
+        if(dirtyFlag_[4])
+        {
+            sql += "type_id,";
+            ++parametersCount;
+        }
+        needSelection=true;
         if(parametersCount > 0)
         {
             sql[sql.length()-1]=')';
@@ -157,6 +236,31 @@ class Books
         int placeholder=1;
         char placeholderStr[64];
         size_t n=0;
+        sql +="default,";
+        if(dirtyFlag_[1])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[2])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        if(dirtyFlag_[3])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
+        else
+        {
+            sql +="default,";
+        }
+        if(dirtyFlag_[4])
+        {
+            n = snprintf(placeholderStr,sizeof(placeholderStr),"$%d,",placeholder++);
+            sql.append(placeholderStr, n);
+        }
         if(parametersCount > 0)
         {
             sql.resize(sql.length() - 1);
