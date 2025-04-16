@@ -1,0 +1,56 @@
+<%inc
+#include "../models/Books.h"
+#include "../models/Readers.h"
+#include <exception>
+#include <map>
+
+using namespace drogon_model::library;
+using namespace drogon::orm;
+%>
+<%c++
+  auto book = @@.get<Books>("book");
+  auto readers = @@.get<std::vector<Readers>>("bookReaders");
+%>
+<html lang="ru-RU">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>[[ title ]]</title>
+  </head>
+
+  <body>
+    <form action="/book_reserve_approve">
+      <input type="hidden" name="book_id" value="{% *book.getBookNum() %}"/>
+    <table class="table">
+      <tbody>
+        <tr>
+          <td>Название книги</td>
+          <td>{% *book.getBookName() %}</td>
+        </tr>
+        <tr>
+          <td>Читатель</td>
+          <td>
+            <select name="reader_id">
+              <option disabled selected="selected">Читатель</option>
+              <%c++ for(auto iter : readers) { %>
+                <option value="{% *iter.getReaderNum() %}">{% *iter.getReaderName() %}</option>
+              <%c++ } %>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=2></td>
+        </tr>
+        <tr>
+          <td colspan=2>
+            <button>Резерв</button>
+            <button>Домой</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+     </form>
+  </body>
+
+</html>

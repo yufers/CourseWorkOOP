@@ -23,14 +23,15 @@ using namespace drogon::orm;
       <thead>
         <tr>
           <th align='left'>ID</th>
-          <th align='left' width='30%'>Название Книги</th>
+          <th align='left' width='20%'>Название Книги</th>
           <th align='left' width='20%'>Автор</th>
           <th align='left' width='20%'>К-во доступных книг</th>
           <th align='left' width='20%'>Тип</th>
+          <th align='left'>Действия</th>
         </tr>
       </thead>
       <tbody>
-          
+
   <%c++ for(auto iter : books) { %>
         <tr>
             <td>{% *iter.getBookNum() %}</td>
@@ -38,6 +39,12 @@ using namespace drogon::orm;
             <td>{% *iter.getBookAuthor() %}</td>
             <td>{% *iter.getBookCount() %}</td>
             <td>{% bookTypesMap[*iter.getTypeId()] %}</td>
+            <td>
+              <form action="/book_reserve">
+                <input type="hidden" name="book_id" value="{% *iter.getBookNum() %}"/>
+                <button>Резерв</button>
+              </form>
+            </td>
         </tr>
   <%c++ } %>
       </tbody>
