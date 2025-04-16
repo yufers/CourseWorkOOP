@@ -34,9 +34,9 @@ using namespace drogon::orm;
   <%c++ for(auto iter : books) { %>
         <tr>
             <td>{% *iter.getBookNum() %}</td>
-            <td>{% *iter.getBookName() %}</td>
+            <td><a href="/book_detail?book_id={% *iter.getBookNum() %}" target="_blank">{% *iter.getBookName() %}</a></td>
             <td>{% *iter.getBookAuthor() %}</td>
-            <td><a href="/book_detail?book_id={% *iter.getBookCount() %}" target="_blank">{% *iter.getBookCount() %}</a></td>
+            <td>{% *iter.getBookCount() %}</td>
             <td>{% bookTypesMap[*iter.getTypeId()] %}</td>
         </tr>
   <%c++ } %>

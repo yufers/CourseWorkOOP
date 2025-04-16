@@ -45,6 +45,7 @@ public:
         }
 
         HttpViewData data;
+        data["title"] = "Список книг";
         data["books"] = books;
         data["bookTypesMap"] = bookTypesMap;
         auto resp = HttpResponse::newHttpViewResponse("ListBooks", data);
