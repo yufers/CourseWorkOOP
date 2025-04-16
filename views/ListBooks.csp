@@ -1,0 +1,47 @@
+<%inc
+#include "../models/Books.h"
+#include <exception>
+#include <map>
+
+using namespace drogon_model::library;
+using namespace drogon::orm;
+%>
+<%c++
+  auto books = @@.get<std::vector<Books>>("books");
+  auto bookTypesMap = @@.get<std::map<int32_t, std::string>>("bookTypesMap");
+%>
+<html lang="ru-RU">
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>[[ title ]]</title>
+  </head>
+
+  <body>
+    <table class="table">
+      <thead>
+        <tr>
+          <th align='left'>ID</th>
+          <th align='left' width='30%'>Название Книги</th>
+          <th align='left' width='20%'>Автор</th>
+          <th align='left' width='20%'>К-во доступных книг</th>
+          <th align='left' width='20%'>Тип</th>
+        </tr>
+      </thead>
+      <tbody>
+          
+  <%c++ for(auto iter : books) { %>
+        <tr>
+            <td>{% *iter.getBookNum() %}</td>
+            <td>{% *iter.getBookName() %}</td>
+            <td>{% *iter.getBookAuthor() %}</td>
+            <td><a href="/book_detail?book_id={% *iter.getBookCount() %}" target="_blank">{% *iter.getBookCount() %}</a></td>
+            <td>{% bookTypesMap[*iter.getTypeId()] %}</td>
+        </tr>
+  <%c++ } %>
+      </tbody>
+    </table>
+  </body>
+
+</html>
