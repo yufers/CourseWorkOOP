@@ -12,10 +12,6 @@ using namespace drogon;
 using namespace drogon::orm;
 using namespace drogon_model::library;
 
-// HttpSimpleController does not allow registration of multiple handlers.
-// Instead, it has one handler - asyncHandleHttpRequest. The
-// HttpSimpleController is a lightweight class designed to handle really simple
-// cases.
 class BooksViewController : public HttpSimpleController<BooksViewController>
 {
 public:

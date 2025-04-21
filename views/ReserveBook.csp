@@ -13,19 +13,19 @@ using namespace drogon::orm;
 %>
 <html lang="ru-RU">
 
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>[[ title ]]</title>
-  </head>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[[ title ]]</title>
+</head>
 
-  <body>
-    <form action="/book_reserve_approve">
-      <input type="hidden" name="book_id" value="{% *book.getBookNum() %}"/>
+<body>
+  <form action="/book_reserve_approve">
+    <input type="hidden" name="book_id" value="{% *book.getBookNum() %}" />
     <table class="table">
       <tbody>
         <tr>
-          <td>Название книги</td>
+          <td width="200px"><b>Название книги:</b></td>
           <td>{% *book.getBookName() %}</td>
         </tr>
         <tr>
@@ -45,12 +45,16 @@ using namespace drogon::orm;
         <tr>
           <td colspan=2>
             <button>Резерв</button>
-            <button>Домой</button>
           </td>
         </tr>
       </tbody>
     </table>
-     </form>
-  </body>
+  </form>
+
+  <br />
+  <form action="/books">
+    <button>К списку книг</button>
+  </form>
+</body>
 
 </html>
