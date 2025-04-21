@@ -1,0 +1,47 @@
+<%inc
+#include "../models/Readers.h"
+#include <exception>
+#include <map>
+
+using namespace drogon_model::library;
+using namespace drogon::orm;
+%>
+<%c++
+  auto readers = @@.get<std::vector<Readers>>("readers");
+%>
+<html lang="ru-RU">
+
+<head>
+  <meta charset="utf-8">
+  <title>[[ title ]]</title>
+</head>
+
+<body>
+  <table class="table">
+    <thead>
+      <tr>
+        <th align='left'>Номер читателя</th>
+        <th align='left' width='20%'>Имя</th>
+        <th align='left' width='20%'>Адрес</th>
+        <th align='left' width='20%'>Номер телефона</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%c++ for(auto iter : readers) { %>
+        <tr>
+          <td>{% *iter.getReaderNum() %}</td>
+          <td>{% *iter.getReaderName() %}</td>
+          <td>{% *iter.getReaderAddress() %}</td>
+          <td>{% *iter.getReaderPhone() %}</td>
+        </tr>
+        <%c++ } %>
+    </tbody>
+  </table>
+
+  <br/>
+  <form action="/">
+    <button>На главную страницу</button>
+  </form>
+</body>
+
+</html>

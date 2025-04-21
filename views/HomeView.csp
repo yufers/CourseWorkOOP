@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>[[ name ]]</title>
+</head>
+
+<body>
+	<h1>Главная страница библиотеки</h1>
+	<hr />
+	<a href="/books">Управление каталогом книг</a>
+	</br>
+	<a href="/readers">Управление списком читателей</a>
+	</br>
+	<a href="/users">Зарезервированные книги</a>
+</body>
+
+</html>
