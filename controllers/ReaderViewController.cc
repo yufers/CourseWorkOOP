@@ -2,8 +2,6 @@
 #include <drogon/HttpResponse.h>
 #include <drogon/orm/Mapper.h>
 
-#include <vector>
-
 #include "../models/Readers.h"
 
 using namespace drogon;
