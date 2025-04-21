@@ -1,0 +1,48 @@
+<%inc
+#include "../models/Readers.h"
+#include <exception>
+#include <map>
+
+using namespace drogon_model::library;
+using namespace drogon::orm;
+%>
+<html lang="ru-RU">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[[ title ]]</title>
+</head>
+
+<body>
+  <form action="/reader_register_approve">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td width="200px">Имя:</td>
+          <td><input type="text"></td>
+        </tr>
+          <tr>
+            <td width="200px">Адрес:</td>
+            <td><input type="text"></td>
+          </tr>
+          <tr>
+            <td width="200px">Номер телефона:</td>
+            <td><input type="text"></td>
+          </tr>
+        <tr>
+          <td>
+            <button>Регистрация</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <br />
+  <form action="/readers">
+    <button>К списку читателей</button>
+  </form>
+</body>
+
+</html>
