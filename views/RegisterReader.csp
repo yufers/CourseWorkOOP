@@ -20,15 +20,15 @@ using namespace drogon::orm;
       <tbody>
         <tr>
           <td width="200px">Имя:</td>
-          <td><input type="text"></td>
+          <td><input type="text" name="name_id"></td>
         </tr>
           <tr>
             <td width="200px">Адрес:</td>
-            <td><input type="text"></td>
+            <td><input type="text" name="address_id"></td>
           </tr>
           <tr>
             <td width="200px">Номер телефона:</td>
-            <td><input type="text"></td>
+            <td><input type="text" name="phone_id"></td>
           </tr>
         <tr>
           <td>
