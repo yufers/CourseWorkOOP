@@ -1,0 +1,62 @@
+<%inc
+#include "../models/BookTypes.h"
+#include <exception>
+#include <map>
+
+using namespace drogon_model::library;
+using namespace drogon::orm;
+%>
+<%c++
+  auto bookTypes = @@.get<std::vector<BookTypes>>("bookTypes");
+%>
+<html lang="ru-RU">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[[ title ]]</title>
+</head>
+
+<body>
+  <form action="/book_register_approve">
+    <table class="table">
+      <tbody>
+        <tr>
+          <td width="200px">Название книги:</td>
+          <td><input type="text" name="book_name_id"></td>
+        </tr>
+          <tr>
+            <td width="200px">Автор:</td>
+            <td><input type="text" name="book_author_id"></td>
+          </tr>
+          <tr>
+            <td width="200px">К-во доступных книг:</td>
+            <td><input type="text" name="book_quantity_id"></td>
+          </tr>
+          <tr>
+            <td>Тип книги</td>
+            <td>
+              <select name="book_type_id">
+                <option disabled selected="selected">Тип</option>
+                <%c++ for(auto iter : bookTypes) { %>
+                  <option value="{% *iter.getTypeId() %}">{% *iter.getTypeName() %}</option>
+                <%c++ } %>
+              </select>
+            </td>
+          </tr>
+        <tr>
+          <td>
+            <button>Добавить книгу</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <br />
+  <form action="/books">
+    <button>К списку книг</button>
+  </form>
+</body>
+
+</html>
