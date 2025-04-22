@@ -1,5 +1,5 @@
 <%inc
-#include "../models/BooksInUse.h"
+#include "../models/BooksInUseExt.h"
 #include <exception>
 #include <map>
 
@@ -7,7 +7,7 @@ using namespace drogon_model::library;
 using namespace drogon::orm;
 %>
 <%c++
-  auto reserve = @@.get<std::vector<BooksInUse>>("reserve");
+  auto reserve = @@.get<std::vector<BooksInUseExt>>("reserve");
 %>
 <html lang="ru-RU">
 
@@ -20,20 +20,22 @@ using namespace drogon::orm;
   <table class="table">
     <thead>
       <tr>
-        <th align='left'>Номер читателя</th>
-        <th align='left' width='20%'>Имя</th>
-        <th align='left' width='20%'>Адрес</th>
-        <th align='left' width='20%'>Номер телефона</th>
-        <th align='left' width='20%'>Номер телефона</th>
+        <th align='left' width='10%'>Номер:</th>
+        <th align='left' width='10%'>Название книги:</th>
+        <th align='left' width='10%'>Имя пользователя:</th>
+        <th align='left' width='10%'>Дата выдачи:</th>
+        <th align='left' width='10%'>Дата необходимого возврата:</th>
+        <th align='left' width='10%'>На сколько дней выдана:</th>
       </tr>
     </thead>
     <tbody>
       <%c++ for(auto iter : reserve) { %>
         <tr>
           <td>{% *iter.getReaderNum() %}</td>
-          <td>{% *iter.getBookNum() %}</td>
-          <td>{% *iter.getBookNum() %}</td>
-          <td>{% *iter.getBookNum() %}</td>
+          <td>{% *iter.getBook()->getBookName() %}</td>
+          <td>{% *iter.getReader()->getReaderName() %}</td>
+          <td>{% *iter.getIssueDateFormatted() %}</td>
+          <td>{% *iter.getReturnDateFormatted() %}</td>
           <td>{% *iter.getReturnPeriod() %}</td>
         </tr>
         <%c++ } %>
@@ -41,20 +43,9 @@ using namespace drogon::orm;
   </table>
 
   <br />
-  <table>
-    <tr>
-      <td>
-        <form action="/">
-          <button>На главную страницу</button>
-        </form>
-      </td>
-      <td>
-        <form action="/register_reader">
-          <button>Добавить пользователя</button>
-        </form>
-      </td>
-    </tr>
-  </table>
+  <form action="/">
+    <button>На главную страницу</button>
+  </form>
 </body>
 
 </html>

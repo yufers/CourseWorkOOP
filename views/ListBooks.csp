@@ -56,9 +56,20 @@ using namespace drogon::orm;
   </table>
 
   <br/>
-  <form action="/">
-    <button>На главную страницу</button>
-  </form>
+  <table>
+    <tr>
+      <td>
+        <form action="/">
+          <button>На главную страницу</button>
+        </form>
+      </td>
+      <td>
+        <form action="/register_book">
+          <button>Добавить книгу</button>
+        </form>
+      </td>
+    </tr>
+  </table>
 </body>
 
 </html>
