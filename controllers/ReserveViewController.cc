@@ -2,7 +2,7 @@
 #include <drogon/HttpResponse.h>
 #include <drogon/orm/Mapper.h>
 
-#include "../models/BooksInUse.h"
+#include "../models/BooksInUseExt.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -21,12 +21,22 @@ public:
     {
         auto clientPtr = drogon::app().getDbClient();
 
-        Mapper<BooksInUse> mpReserve(clientPtr);
-        auto reserve = mpReserve.orderBy(BooksInUse::Cols::_book_in_use_num).offset(0).findAll();
+        Mapper<BooksInUseExt> mpReserve(clientPtr);
+        Mapper<Books> mpBook(clientPtr);
+        Mapper<Readers> mpReader(clientPtr);
+
+        auto reserves = mpReserve.orderBy(BooksInUseExt::Cols::_book_in_use_num).offset(0).findAll();
+        for (auto it : reserves) {
+            auto book = mpBook.findByPrimaryKey(*it.getBookNum());
+            it.setBook(book);
+
+            auto reader = mpReader.findByPrimaryKey(*it.getReaderNum());
+            it.setReader(reader);
+        }
 
         HttpViewData data;
         data["title"] = "Список зарезервированных книг";
-        data["reserve"] = reserve;
+        data["reserve"] = reserves;
         auto resp = HttpResponse::newHttpViewResponse("ListBooksInUse", data);
         callback(resp);
     }
