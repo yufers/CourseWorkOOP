@@ -40,7 +40,6 @@ public:
         book.setBookCount(*book.getBookCount() - 1);
         mpBook.update(book);
 
-        Mapper<BooksInUse> mpBooksInUse(clientPtr);
         BooksInUse booksInUse;
         booksInUse.setBookNum(bookId);
         booksInUse.setReaderNum(readerId);
@@ -48,16 +47,11 @@ public:
         booksInUse.setReturnDate(getReturnDate(15));
         booksInUse.setReturnPeriod(15);
 
+        Mapper<BooksInUse> mpBooksInUse(clientPtr);
         mpBooksInUse.insert(booksInUse);
 
-        Mapper<Readers> mpReader(clientPtr);
-        auto bookReaders = mpReader.orderBy(Readers::Cols::_reader_num).offset(0).findAll();
-
-        HttpViewData data;
-        data["title"] = "Резервирование книги";
-        data["book"] = book;
-        data["bookReaders"] = bookReaders;
-        auto resp = HttpResponse::newHttpViewResponse("ReserveBook", data);
+        HttpResponsePtr resp = HttpResponse::newHttpResponse();
+        resp->setBody("<script>window.location.href = \"/books\";</script>");
         callback(resp);
     }
 
