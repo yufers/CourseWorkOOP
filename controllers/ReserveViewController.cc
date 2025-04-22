@@ -3,6 +3,8 @@
 #include <drogon/orm/Mapper.h>
 
 #include "../models/BooksInUseExt.h"
+#include "../models/Books.h"
+#include "../models/Readers.h"
 
 using namespace drogon;
 using namespace drogon::orm;
@@ -26,7 +28,8 @@ public:
         Mapper<Readers> mpReader(clientPtr);
 
         auto reserves = mpReserve.orderBy(BooksInUseExt::Cols::_book_in_use_num).offset(0).findAll();
-        for (auto it : reserves) {
+        for (auto &it : reserves)
+        {
             auto book = mpBook.findByPrimaryKey(*it.getBookNum());
             it.setBook(book);
 
